@@ -1,0 +1,29 @@
+FROM centos:7 as build
+
+# Multistage build available only with docker-ce version >= 17.05 (but kubeadm-1.10 supports 17.03 !)
+
+RUN yum install -y \
+     ca-certificates \
+     git \
+     wget && \
+  rm -rf /var/lib/apt/lists/*
+
+ENV GOLANG_VERSION 1.10
+RUN wget -nv -O - https://storage.googleapis.com/golang/go${GOLANG_VERSION}.linux-amd64.tar.gz \
+    | tar -C /usr/local -xz
+ENV GOPATH /go
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+RUN mkdir -p /go/bin /go/pkg
+
+WORKDIR /go/src/k8s-accelerator-devplugin
+COPY *.go Gopkg.* ./
+
+RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+
+RUN dep ensure && go install -v k8s-accelerator-devplugin
+
+FROM centos:7
+
+COPY --from=build /go/bin/k8s-accelerator-devplugin /usr/bin/
+
+CMD ["k8s-accelerator-devplugin"]
