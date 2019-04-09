@@ -1,6 +1,8 @@
 # k8s-accelerator-devplugin
 
-## Presentation
+Copyright 2019 b<>com
+
+## Presentation
 
 `k8s-accelerator-devplugin` is a [device plugin](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/resource-management/device-plugin.md) for kubernetes to manage AWS/Intel FPGA accelerator.
 
